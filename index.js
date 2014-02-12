@@ -1,19 +1,19 @@
 var fs = require("fs");
 var _ = require("lodash");
 require.resolve = function (request) {
-	return module.getFilename(request);
+	return module._getFilename(request);
 };
 
 var __dirname = module.filename.replace(/\/[^\/]*$/, '');
 
 module.exports = function (options) {
-	options = _.assign({}, options, {
-		cleanup: true,
+	options = _.assign({}, {
+		clean: true,
 		config: {},
 		css: false,
 		selector: "body",
 		dest: fs.absolute("")
-	});
+	}, options);
 
 	return function (done) {
 		var page = this;
@@ -30,6 +30,7 @@ module.exports = function (options) {
 		});
 
 		page.on("mathjax:end", function () {
+			fs.write("/tmp/head.html", page.helpers.html("head"));
 			done();
 		});
 
@@ -40,18 +41,17 @@ module.exports = function (options) {
 				
 				var onFont = function (font, url) {
 					// Synchronous XMLHttpRequest for easy flow.
-					var xhr = new XMLHttpRequest("GET", url, false);
-					if (xhr.status === 200) {
-						window.callPhantom(["mathjax:font", font, xhr.responseText]);
-					}
-					else {
-						console.error ("Failed to load font: " + url);
-					}
+					var xhr = new XMLHttpRequest();
+					xhr.open("GET", url, false);
+					xhr.responseType = "blob";
+					xhr.send();
+					window.callPhantom(["mathjax:font", font, xhr.response]);
 				};
 
 				var onRender = function () {
+					console.log("Cleaning up...");
 					if (options.css) {
-						var css = task.css()
+						var css = task.css();
 						for (var font in css.fonts) {
 							if (css.fonts.hasOwnProperty(font)) {
 								onFont(font, css.fonts[font]);
@@ -60,12 +60,13 @@ module.exports = function (options) {
 						window.callPhantom(["mathjax:css", css.contents]);
 					}
 					if (options.clean) {
-						task.clean();
+						// task.clean();
 					}
 					window.callPhantom(["mathjax:end"]);						
 				};
-
+				console.log("Loading MathJax...");
 				task.inject(function () {
+					console.log("Rendering Math...");
 					task.render(options.selector, onRender);
 				});
 			})();
