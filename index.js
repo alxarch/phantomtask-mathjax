@@ -40,7 +40,7 @@ module.exports = function (options) {
 		page.evaluate(function (options) {
 			(function () {
 				/* global MathJaxTask */
-				var task = new EasyMathJax(options);
+				var easy = new EasyMathJax(options);
 				
 				var onFont = function (font, url) {
 					// Synchronous XMLHttpRequest for easy flow.
@@ -54,7 +54,7 @@ module.exports = function (options) {
 				var onRender = function () {
 					console.log("Cleaning up...");
 					if (options.css) {
-						var css = task.css();
+						var css = easy.css();
 						for (var font in css.fonts) {
 							if (css.fonts.hasOwnProperty(font)) {
 								onFont(font, css.fonts[font]);
@@ -63,15 +63,17 @@ module.exports = function (options) {
 						window.callPhantom(["mathjax:css", css.contents]);
 					}
 					if (options.clean) {
-						// task.clean();
+						easy.clean();
 					}
 					window.callPhantom(["mathjax:end"]);						
 				};
-				console.log("Loading MathJax...");
-				task.inject(function () {
+
+				var onReady = function () {
 					console.log("Rendering Math...");
-					task.render(options.selector, onRender);
-				});
+					easy.render(options.selector, onRender);
+				};
+				console.log("Loading MathJax...");
+				easy.inject(onReady);
 			})();
 		}, options);
 	};
