@@ -34,7 +34,6 @@ module.exports = function (options) {
 		});
 
 		page.on("mathjax:end", function () {
-			fs.write("/tmp/head.html", page.helpers.html("head"));
 			done();
 		});
 
