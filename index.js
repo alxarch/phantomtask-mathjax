@@ -25,8 +25,12 @@ module.exports = function (options) {
 			fs.write(options.dest + "mathjax.css", css, "w");
 		});
 
-		page.on("mathjax:font", function (font, data) {
-			fs.write(options.dest + "/fonts/mathjax/" + font, data);
+		page.on("mathjax:font", function (font, url) {
+			var xhr = new XMLHttpRequest();
+			xhr.responseType = "blob";
+			xhr.open("GET", url, false);
+			xhr.send();
+			fs.write(options.dest + "/fonts/mathjax/" + font, xhr.response);
 		});
 
 		page.on("mathjax:end", function () {
