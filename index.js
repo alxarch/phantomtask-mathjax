@@ -58,7 +58,7 @@ module.exports = function (options) {
 						window.callPhantom(["mathjax:css", css.contents]);
 					}
 					if (options.clean) {
-						// task.clean();
+						task.clean();
 					}
 					window.callPhantom(["mathjax:end"]);						
 				};
