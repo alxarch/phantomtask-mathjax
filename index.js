@@ -4,8 +4,6 @@ require.resolve = function (request) {
 	return module._getFilename(request);
 };
 
-var __dirname = module.filename.replace(/\/[^\/]*$/, '');
-
 module.exports = function (options) {
 	options = _.assign({}, {
 		clean: true,
