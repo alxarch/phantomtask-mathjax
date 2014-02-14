@@ -62,11 +62,15 @@ module.exports = function (options) {
 					}
 					window.callPhantom(["mathjax:end"]);						
 				};
-				console.log("Loading MathJax...");
-				task.inject(function () {
+
+				var onReady = function () {
 					console.log("Rendering Math...");
 					task.render(options.selector, onRender);
-				});
+				};
+
+
+				console.log("Loading MathJax...");
+				task.inject(onReady);
 			})();
 		}, options);
 	};
