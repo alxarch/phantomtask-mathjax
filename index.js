@@ -6,11 +6,11 @@ require.resolve = function (request) {
 
 module.exports = function (options) {
 	options = _.assign({}, {
-		clean: true,
-		config: {},
-		css: false,
-		selector: "body",
-		dest: fs.absolute("")
+		clean:     true,
+		config:    {},
+		css:       false,
+		selector:  "body",
+		dest:      fs.absolute("")
 	}, options);
 
 	return function (done) {
