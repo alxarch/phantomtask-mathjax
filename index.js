@@ -1,10 +1,11 @@
 var fs = require("fs");
 var _ = require("lodash");
-require.resolve = function (request) {
+var resolve = function (request) {
 	return module._getFilename(request);
 };
 
 module.exports = function (options) {
+
 	options = _.assign({}, {
 		clean:     true,
 		config:    {},
@@ -16,8 +17,7 @@ module.exports = function (options) {
 	return function (done) {
 		var page = this;
 
-		var easy = require.resolve("easy-mathjax");
-		page.injectJs(easy);
+		page.injectJs(resolve("easy-mathjax"));
 
 		page.on("mathjax:css", function (css) {
 			fs.write(options.dest + "mathjax.css", css, "w");
