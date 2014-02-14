@@ -32,8 +32,9 @@ module.exports = function (options) {
 		});
 
 		page.evaluate(function (options) {
+
 			(function () {
-				/* global MathJaxTask */
+				/* global window, EasyMathJax, XMLHttpRequest */
 				var task = new EasyMathJax(options);
 				
 				var onFont = function (font, url) {
