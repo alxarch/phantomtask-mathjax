@@ -1,13 +1,25 @@
 {
   "name": "phantomtask-mathjax",
   "version": "0.0.0",
-  "description": "",
+  "description": "Automate MathJax tasks with phantomjs.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/alxarch/phantomtask-mathjax.git"
+  },
+  "keywords": [
+    "mathjax",
+    "phantomtask"
+  ],
+  "bugs": {
+    "url": "https://github.com/alxarch/phantomtask-mathjax/issues"
+  },
+  "homepage": "https://github.com/alxarch/phantomtask-mathjax",
+  "author": "Alexandros Sigalas <alxarch@gmail.com>",
+  "license": "Apache v2",
   "dependencies": {
     "easy-mathjax": "~0.1.1"
   },
