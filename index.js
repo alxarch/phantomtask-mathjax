@@ -1,25 +1,23 @@
 var fs = require("fs");
 var _ = require("lodash");
-require.resolve = function (request) {
+var resolve = function (request) {
 	return module._getFilename(request);
 };
 
-var __dirname = module.filename.replace(/\/[^\/]*$/, '');
-
 module.exports = function (options) {
+
 	options = _.assign({}, {
-		clean: true,
-		config: {},
-		css: false,
-		selector: "body",
-		dest: fs.absolute("")
+		clean:     true,
+		config:    {},
+		css:       false,
+		selector:  "body",
+		dest:      fs.absolute("")
 	}, options);
 
 	return function (done) {
 		var page = this;
 
-		var easy = require.resolve("easy-mathjax");
-		page.injectJs(easy);
+		page.injectJs(resolve("easy-mathjax"));
 
 		page.on("mathjax:css", function (css) {
 			fs.write(options.dest + "mathjax.css", css, "w");
@@ -38,9 +36,10 @@ module.exports = function (options) {
 		});
 
 		page.evaluate(function (options) {
+
 			(function () {
-				/* global MathJaxTask */
-				var easy = new EasyMathJax(options);
+				/* global window, EasyMathJax, XMLHttpRequest */
+				var task = new EasyMathJax(options);
 				
 				var onFont = function (font, url) {
 					// Synchronous XMLHttpRequest for easy flow.
@@ -63,17 +62,19 @@ module.exports = function (options) {
 						window.callPhantom(["mathjax:css", css.contents]);
 					}
 					if (options.clean) {
-						easy.clean();
+						task.clean();
 					}
 					window.callPhantom(["mathjax:end"]);						
 				};
 
 				var onReady = function () {
 					console.log("Rendering Math...");
-					easy.render(options.selector, onRender);
+					task.render(options.selector, onRender);
 				};
+
 				console.log("Loading MathJax...");
-				easy.inject(onReady);
+				task.inject(onReady);
+
 			})();
 		}, options);
 	};
