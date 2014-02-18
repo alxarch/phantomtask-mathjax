@@ -25,7 +25,8 @@
   "license": "Apache v2",
   "dependencies": {
     "easy-mathjax": "~0.1.1",
-    "lodash": "~2.4.1"
+    "lodash": "~2.4.1",
+    "async": "~0.2.10"
   },
   "devDependencies": {
     "grunt": "~0.4.2",

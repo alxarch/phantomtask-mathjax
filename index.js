@@ -1,4 +1,5 @@
 var fs = require("fs");
+var async = require("async");
 var _ = require("lodash");
 var resolve = function (request) {
 	return module._getFilename(request);
@@ -16,6 +17,7 @@ module.exports = function (options) {
 
 	return function (done) {
 		var page = this;
+		jobs = [];
 
 		page.injectJs(resolve("easy-mathjax"));
 
@@ -23,12 +25,20 @@ module.exports = function (options) {
 			fs.write(options.dest + "mathjax.css", css, "w");
 		});
 
-		page.on("mathjax:font", function (font, data) {
-			fs.write(options.dest + "/fonts/mathjax/" + font, data);
+		page.on("mathjax:font", function (font, url) {
+			jobs.push(function (done) {
+
+				page.helpers.wget(url, function (error, data) {
+					if(!error) {
+						fs.write(options.dest + "/fonts/mathjax/" + font, data, "wb");
+					}
+					done(error);
+				});
+			});
 		});
 
 		page.on("mathjax:end", function () {
-			done();
+			async.series(jobs, done);
 		});
 
 		page.evaluate(function (options) {
@@ -37,22 +47,13 @@ module.exports = function (options) {
 				/* global window, EasyMathJax, XMLHttpRequest */
 				var easy = new EasyMathJax(options);
 				
-				var onFont = function (font, url) {
-					// Synchronous XMLHttpRequest for easy flow.
-					var xhr = new XMLHttpRequest();
-					xhr.open("GET", url, false);
-					xhr.responseType = "blob";
-					xhr.send();
-					window.callPhantom(["mathjax:font", font, xhr.response]);
-				};
-
 				var onRender = function () {
 					console.log("Cleaning up...");
 					if (options.css) {
 						var css = easy.css();
 						for (var font in css.fonts) {
 							if (css.fonts.hasOwnProperty(font)) {
-								onFont(font, css.fonts[font]);
+								window.callPhantom(["mathjax:font", font, css.fonts[font]]);
 							}
 						}
 						window.callPhantom(["mathjax:css", css.contents]);
