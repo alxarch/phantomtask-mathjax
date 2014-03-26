@@ -17,7 +17,7 @@ module.exports = function (options) {
 
 	return function (done) {
 		var page = this;
-		jobs = [];
+		var jobs = [];
 
 		page.injectJs(resolve("easy-mathjax"));
 
